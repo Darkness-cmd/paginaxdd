@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Interactiva</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            width: 350px;
+            text-align: center;
+            transition: transform 0.3s ease-in-out, opacity 0.5s;
+            opacity: 1;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .container:hover {
+            transform: translate(-50%, -50%) scale(1.05);
+        }
+        input {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 90%;
+            font-size: 16px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            background: linear-gradient(to right, #ff9800, #ff5722);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: transform 0.3s, background 0.3s;
+        }
+        button:hover {
+            background: linear-gradient(to right, #e68900, #d84315);
+            transform: scale(1.1);
+        }
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translate(-50%, -50%) scale(0.9);
+        }
+        .switch {
+            margin-top: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: underline;
+            color: #ff9800;
+            transition: color 0.3s;
+        }
+        .switch:hover {
+            color: #e68900;
+        }
+        video {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .logout {
+            margin-top: 20px;
+            background: #ff3b3b;
+            transition: background 0.3s;
+        }
+        .logout:hover {
+            background: #cc0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <h1>Iniciar Sesión</h1>
+        <input type="text" id="loginUsername" placeholder="Usuario">
+        <input type="password" id="loginPassword" placeholder="Contraseña">
+        <button onclick="login()">Entrar</button>
+        <p class="switch" onclick="toggleForms()">¿No tienes cuenta? Regístrate</p>
+    </div>
+    
+    <div class="container hidden" id="registerContainer">
+        <h1>Registrarse</h1>
+        <input type="text" id="registerUsername" placeholder="Usuario">
+        <input type="password" id="registerPassword" placeholder="Contraseña">
+        <button onclick="register()">Registrarse</button>
+        <p class="switch" onclick="toggleForms()">¿Ya tienes cuenta? Inicia sesión</p>
+    </div>
+    
+    <div class="container hidden" id="videoContainer">
+        <h1>Bienvenido, <span id="welcomeUser"></span>!</h1>
+        <video id="welcomeVideo" controls autoplay>
+            <source src="videos/feliz día culona meme - Raul Biso (360p, h264).mp4" type="video/mp4">
+            Tu navegador no soporta el video.
+        </video>
+        <button class="logout" onclick="logout()">Cerrar Sesión</button>
+    </div>
+
+    <script>
+        function toggleForms() {
+            document.getElementById("loginContainer").classList.toggle("hidden");
+            document.getElementById("registerContainer").classList.toggle("hidden");
+        }
+
+        function register() {
+            const username = document.getElementById("registerUsername").value;
+            const password = document.getElementById("registerPassword").value;
+            
+            if (!username || !password) {
+                alert("Por favor, ingresa un usuario y contraseña.");
+                return;
+            }
+            
+            let users = JSON.parse(localStorage.getItem("users")) || {};
+            
+            if (users[username]) {
+                alert("El usuario ya existe. Intenta con otro nombre.");
+                return;
+            }
+            
+            users[username] = password;
+            localStorage.setItem("users", JSON.stringify(users));
+            alert("Registro exitoso. Ahora inicia sesión.");
+            toggleForms();
+        }
+
+        function login() {
+            const username = document.getElementById("loginUsername").value;
+            const password = document.getElementById("loginPassword").value;
+            
+            let users = JSON.parse(localStorage.getItem("users")) || {};
+            
+            if (users[username] && users[username] === password) {
+                alert("Inicio de sesión exitoso");
+                localStorage.setItem("loggedInUser", username);
+                document.getElementById("welcomeUser").innerText = username;
+                document.getElementById("loginContainer").classList.add("hidden");
+                document.getElementById("videoContainer").classList.remove("hidden");
+                document.getElementById("welcomeVideo").play();
+            } else {
+                alert("Usuario o contraseña incorrectos.");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem("loggedInUser");
+            location.reload();
+        }
+
+        window.onload = function() {
+            let loggedInUser = localStorage.getItem("loggedInUser");
+            if (loggedInUser) {
+                document.getElementById("welcomeUser").innerText = loggedInUser;
+                document.getElementById("loginContainer").classList.add("hidden");
+                document.getElementById("videoContainer").classList.remove("hidden");
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página Interactiva</title>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            background: linear-gradient(to right, #141e30, #243b55);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            width: 300px;
+            transition: transform 0.3s ease-in-out;
+        }
+        .container:hover {
+            transform: scale(1.05);
+        }
+        input {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 90%;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            border: none;
+            background: #ff9800;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #e68900;
+        }
+        .hidden {
+            display: none;
+        }
+        .switch {
+            margin-top: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: underline;
+            color: #ff9800;
+        }
+        video {
+            margin-top: 20px;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="loginContainer">
+        <h1>Iniciar Sesión</h1>
+        <input type="text" id="loginUsername" placeholder="Usuario">
+        <input type="password" id="loginPassword" placeholder="Contraseña">
+        <button onclick="login()">Entrar</button>
+        <p class="switch" onclick="toggleForms()">¿No tienes cuenta? Regístrate</p>
+    </div>
+    
+    <div class="container hidden" id="registerContainer">
+        <h1>Registrarse</h1>
+        <input type="text" id="registerUsername" placeholder="Usuario">
+        <input type="password" id="registerPassword" placeholder="Contraseña">
+        <button onclick="register()">Registrarse</button>
+        <p class="switch" onclick="toggleForms()">¿Ya tienes cuenta? Inicia sesión</p>
+    </div>
+    
+    <div class="container hidden" id="videoContainer">
+        <h1>Bienvenid@</h1>
+        <video id="welcomeVideo" controls autoplay>
+            <source src="videos/feliz día culona meme - Raul Biso (360p, h264).mp4" type="video/mp4">
+            Tu navegador no soporta el video.
+        </video>
+    </div>
+
+    <script>
+        function toggleForms() {
+            document.getElementById("loginContainer").classList.toggle("hidden");
+            document.getElementById("registerContainer").classList.toggle("hidden");
+        }
+
+        function register() {
+            const username = document.getElementById("registerUsername").value;
+            const password = document.getElementById("registerPassword").value;
+            
+            if (!username || !password) {
+                alert("Por favor, ingresa un usuario y contraseña.");
+                return;
+            }
+            
+            let users = JSON.parse(localStorage.getItem("users")) || {};
+            
+            if (users[username]) {
+                alert("El usuario ya existe. Intenta con otro nombre.");
+                return;
+            }
+            
+            users[username] = password;
+            localStorage.setItem("users", JSON.stringify(users));
+            alert("Registro exitoso. Ahora inicia sesión.");
+            toggleForms();
+        }
+
+        function login() {
+            const username = document.getElementById("loginUsername").value;
+            const password = document.getElementById("loginPassword").value;
+            
+            let users = JSON.parse(localStorage.getItem("users")) || {};
+            
+            if (users[username] && users[username] === password) {
+                alert("Inicio de sesión exitoso");
+                localStorage.setItem("loggedInUser", username);
+                document.getElementById("loginContainer").classList.add("hidden");
+                document.getElementById("videoContainer").classList.remove("hidden");
+                document.getElementById("welcomeVideo").play();
+            } else {
+                alert("Usuario o contraseña incorrectos.");
+            }
+        }
+
+        window.onload = function() {
+            if (localStorage.getItem("loggedInUser")) {
+                document.getElementById("loginContainer").classList.add("hidden");
+                document.getElementById("videoContainer").classList.remove("hidden");
+            }
+        };
+    </script>
+</body>
+</html>
